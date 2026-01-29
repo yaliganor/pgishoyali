@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="he">
+<meta charset="UTF-8">
+<head>
+    <title>צור תמונה</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>מלא שם וכיתה:</h2>
+    <input id="nameInput" placeholder="שם">
+    <input id="classInput" placeholder="כיתה">
+    <br>
+    <button onclick="createImage()">צור תמונה רגילה</button>
+    <button onclick="createValiV()">באלי וי</button>
+
+    <canvas id="canvas"></canvas>
+    <br>
+    <a id="downloadLink" style="display:none;" download="output.png">הורד את התמונה</a>
+
+    <script>
+        const templateImg = new Image();
+        templateImg.src = 'static/template.png';
+        const valiVImg = new Image();
+        valiVImg.src = 'static/V.png';
+
+        function createImage() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (!name) { alert("אנא הכנס שם"); return; }
+
+            templateImg.onload = () => drawTemplate(name);
+            if (templateImg.complete) drawTemplate(name);
+        }
+
+        function drawTemplate(name) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = templateImg.width * 0.8;
+            canvas.height = templateImg.height * 0.8;
+            ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const dateStr = `${day}/${month}/${year}`;
+            const timeStr = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+
+            ctx.fillStyle = "#6f7e89";
+            ctx.textBaseline = "middle";
+
+            ctx.font = `bold ${55 * 0.8}px Arial`;
+            ctx.textAlign = "left";
+            ctx.fillText(timeStr, canvas.width * 0.07, canvas.height * 0.385);
+            ctx.fillText(dateStr, canvas.width * 0.65, canvas.height * 0.385);
+
+            ctx.textAlign = "right";
+            ctx.direction = "rtl";
+
+            let maxWidth = canvas.width * 0.17;
+            let fontSize = 55 * 0.8;
+            ctx.font = `bold ${fontSize}px Arial`;
+
+            while (ctx.measureText(name).width > maxWidth && fontSize > 10) {
+                fontSize -= 1;
+                ctx.font = `bold ${fontSize}px Arial`;
+            }
+
+            ctx.fillText(name, canvas.width * 0.90, canvas.height * 0.445);
+
+            const link = document.getElementById('downloadLink');
+            link.href = canvas.toDataURL("image/png");
+            link.download = "output.png";
+            link.style.display = "inline";
+        }
+
+        function createValiV() {
+            const name = document.getElementById('nameInput').value.trim();
+            const userClass = document.getElementById('classInput').value.trim();
+            if (!name || !userClass) { alert("אנא מלא שם וכיתה"); return; }
+
+            valiVImg.onload = () => drawValiV(name, userClass);
+            if (valiVImg.complete) drawValiV(name, userClass);
+        }
+
+        function drawValiV(name, userClass) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = valiVImg.width;
+            canvas.height = valiVImg.height;
+            ctx.drawImage(valiVImg, 0, 0);
+
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = String(now.getFullYear()).slice(-2);
+            const dateStr = `${day}/${month}/${year}`;
+
+            const startHour = now.getHours();
+            const endHour = startHour + 2;
+            const hourStr = `${startHour}:00-${endHour}:00`;
+
+            ctx.font = "25px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "left";
+
+            ctx.fillText(`${dateStr}`, 357, 217);
+            ctx.fillText(`${hourStr}`, 60, 217);
+            ctx.fillText(`${startHour}:00`, 345, 448);
+            ctx.fillText(`${endHour}:00`, 50, 448);
+            ctx.fillText(`${userClass}`, 60, 273);
+            ctx.fillText(`${name}`, 357, 273);
+
+            const link = document.getElementById('downloadLink');
+            link.href = canvas.toDataURL("image/png");
+            link.download = "V_filled.png";
+            link.style.display = "inline";
+        }
+    </script>
+</body>
+</html>
