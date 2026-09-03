@@ -166,13 +166,24 @@
             ctx.textAlign = "right";
             ctx.direction = "rtl";
 
-            // Adjusted X Coordinates to fix the overlap
-            ctx.fillText(`${dateStr}`, 320, 217);
-            ctx.fillText(`${hourStr}`, 280, 217);
-            ctx.fillText(`${startHour}:00`, 320, 273);
-            ctx.fillText(`${endHour}:00`, 90, 273);
-            ctx.fillText(`${userClass}`, 310, 448);
-            ctx.fillText(`${name}`, 90, 448);  
+            // --- ALIGNMENT CONTROLS ---
+            // If the text is still slightly off, just change these two numbers!
+            // Decrease the number to move text LEFT. Increase to move RIGHT.
+            const rightColumnX = 430; 
+            const leftColumnX = 180;  
+            // --------------------------
+
+            // Row 1: Date & Hour Range
+            ctx.fillText(dateStr, rightColumnX, 217);  
+            ctx.fillText(hourStr, leftColumnX, 217);  
+            
+            // Row 2: Name & Class
+            ctx.fillText(name, rightColumnX, 273);     
+            ctx.fillText(userClass, leftColumnX, 273); 
+            
+            // Row 3: Start Hour & End Hour
+            ctx.fillText(`${startHour}:00`, rightColumnX, 448); 
+            ctx.fillText(`${endHour}:00`, leftColumnX, 448);   
 
             displayImageForMobile("V_filled.png");
         }
