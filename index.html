@@ -1,210 +1,29 @@
 <!DOCTYPE html>
-<html lang="he">
-<meta charset="UTF-8">
+<html lang="he" dir="rtl">
 <head>
-    <title>צור תמונה</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דברו איתי לאחד החדש</title>
     <style>
         body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: red;
+            font-size: 4rem;
             font-family: Arial, sans-serif;
-            direction: rtl;
             text-align: center;
-            margin-top: 50px;
-        }
-        input {
-            font-size: 18px;
-            padding: 5px;
-            margin: 5px;
-        }
-        button {
-            font-size: 18px;
-            padding: 10px 20px;
-            margin: 10px 5px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        canvas {
-            display: none; 
-        }
-        #outputImage {
-            display: none;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            max-width: 90%;
-            height: auto;
-        }
-        .instruction {
-            color: #555;
-            font-size: 14px;
-            display: none;
+            margin: 0;
         }
     </style>
 </head>
 <body>
-
-    <h2>מלא שם וכיתה:</h2>
-    <input id="nameInput" placeholder="שם">
-    <input id="classInput" placeholder="כיתה">
-    <br>
-    <button onclick="createImage()">צור תמונה רגילה</button>
-    <button onclick="createValiV()">באלי וי</button>
-
-    <canvas id="canvas"></canvas>
-    
-    <img id="outputImage" alt="התמונה שלך תופיע כאן">
-    <p id="saveInstruction" class="instruction">לחיצה ארוכה על התמונה כדי לשמור בגלריה (או לחץ על הכפתור למטה)</p>
-    
-    <br>
-    <a id="downloadLink" style="display:none;">הורד את התמונה (מחשב)</a>
-
-    <script>
-        // Load custom font using FontFace API
-        const customFont = new FontFace('CustomArialBold', 'url(static/ARIALBD 1.TTF)');
-        customFont.load().then(function(loadedFont) {
-            document.fonts.add(loadedFont);
-            console.log('Custom font loaded successfully!');
-        }).catch(function(error) {
-            console.error('Failed to load custom font:', error);
-        });
-
-        const templateImg = new Image();
-        templateImg.src = 'static/template.png';
-        const valiVImg = new Image();
-        valiVImg.src = 'static/V.png';
-
-        function displayImageForMobile(filename) {
-            const canvas = document.getElementById('canvas');
-            const outputImage = document.getElementById('outputImage');
-            const link = document.getElementById('downloadLink');
-            const instruction = document.getElementById('saveInstruction');
-            
-            const dataURL = canvas.toDataURL("image/png");
-            
-            outputImage.src = dataURL;
-            outputImage.style.display = "block";
-            instruction.style.display = "block";
-
-            link.href = dataURL;
-            link.download = filename;
-            link.style.display = "inline-block";
-        }
-
-        function createImage() {
-            const name = document.getElementById('nameInput').value.trim();
-            if (!name) { alert("אנא הכנס שם"); return; }
-
-            templateImg.onload = () => drawTemplate(name);
-            if (templateImg.complete) drawTemplate(name);
-        }
-
-        function drawTemplate(name) {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = templateImg.width * 0.8;
-            canvas.height = templateImg.height * 0.8;
-            ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
-
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            const dateStr = `${day}/${month}/${year}`;
-            const timeStr = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
-
-            ctx.fillStyle = "#6f7e89";
-            ctx.textBaseline = "middle";
-
-            ctx.font = `bold ${55 * 0.8}px Arial`;
-            
-            ctx.textAlign = "left";
-            ctx.direction = "ltr"; 
-            ctx.fillText(timeStr, canvas.width * 0.07, canvas.height * 0.385);
-            ctx.fillText(dateStr, canvas.width * 0.65, canvas.height * 0.385);
-
-            ctx.textAlign = "right";
-            ctx.direction = "rtl";
-
-            let maxWidth = canvas.width * 0.17;
-            let fontSize = 55 * 0.8;
-            ctx.font = `bold ${fontSize}px Arial`;
-
-            while (ctx.measureText(name).width > maxWidth && fontSize > 10) {
-                fontSize -= 1;
-                ctx.font = `bold ${fontSize}px Arial`;
-            }
-
-            ctx.fillText(name, canvas.width * 0.90, canvas.height * 0.445);
-
-            displayImageForMobile("output.png");
-        }
-
-        function createValiV() {
-            const name = document.getElementById('nameInput').value.trim();
-            const userClass = document.getElementById('classInput').value.trim();
-            if (!name || !userClass) { alert("אנא מלא שם וכיתה"); return; }
-
-            // Send data to your Vercel backend function for Discord
-            fetch('/api/send-discord', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, userClass: userClass })
-            }).catch(err => console.error('Discord error:', err));
-
-            valiVImg.onload = () => drawValiV(name, userClass);
-            if (valiVImg.complete) drawValiV(name, userClass);
-        }
-
-        function drawValiV(name, userClass) {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = valiVImg.width;
-            canvas.height = valiVImg.height;
-            ctx.drawImage(valiVImg, 0, 0);
-
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = String(now.getFullYear()).slice(-2);
-            const dateStr = `${day}/${month}/${year}`;
-
-            const startHour = now.getHours();
-            const endHour = startHour + 2;
-            const hourStr = `${startHour}:00-${endHour}:00`;
-
-            // Using your custom font loaded from static folder
-            ctx.font = "25px 'CustomArialBold', Arial, sans-serif";
-            ctx.fillStyle = "black";
-            
-            ctx.textAlign = "right";
-            ctx.direction = "rtl";
-
-            // --- EXACT ALIGNMENT CONTROLS ---
-            const dateX = 460;        
-            const hourRangeX = 190;   
-            const nameX = 400;        
-            const classX = 90;       
-            const startHourX = 400;   
-            const exitHourX = 110;    
-            // --------------------------------
-
-            // Row 1: Date & Hour Range
-            ctx.fillText(dateStr, dateX, 217);  
-            ctx.fillText(hourStr, hourRangeX, 217);  
-            
-            // Row 2: Name & Class
-            ctx.fillText(name, nameX, 273);     
-            ctx.fillText(userClass, classX, 273); 
-            
-            // Row 3: Start Hour & End Hour
-            ctx.fillText(`${startHour}:00`, startHourX, 448); 
-            ctx.fillText(`${endHour}:00`, exitHourX, 448);   
-
-            displayImageForMobile("V_filled.png");
-        }
-    </script>
+    <h1>דברו איתי לאחד החדש</h1>
 </body>
 </html>
