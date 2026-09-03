@@ -132,7 +132,16 @@
             displayImageForMobile("output.png");
         }
 
-        // --- This is the function the browser was missing! ---
+        // --- The Missing Function is Back ---
+        function createValiV() {
+            const name = document.getElementById('nameInput').value.trim();
+            const userClass = document.getElementById('classInput').value.trim();
+            if (!name || !userClass) { alert("אנא מלא שם וכיתה"); return; }
+
+            valiVImg.onload = () => drawValiV(name, userClass);
+            if (valiVImg.complete) drawValiV(name, userClass);
+        }
+
         function drawValiV(name, userClass) {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
@@ -158,14 +167,12 @@
             ctx.direction = "rtl";
 
             // --- EXACT ALIGNMENT CONTROLS ---
-            // Increase number -> moves text RIGHT
-            // Decrease number -> moves text LEFT
-            const dateX = 490;       // Moved more to the right
-            const hourRangeX = 180;  // Kept in place
-            const nameX = 460;       // Moved a little right
-            const classX = 130;      // Moved more left
-            const startHourX = 360;  // Moved left
-            const exitHourX = 120;   // Moved left
+            const dateX = 490;       
+            const hourRangeX = 180;  
+            const nameX = 460;       
+            const classX = 130;      
+            const startHourX = 360;  
+            const exitHourX = 120;   
             // --------------------------------
 
             // Row 1: Date & Hour Range
@@ -176,7 +183,7 @@
             ctx.fillText(name, nameX, 273);     
             ctx.fillText(userClass, classX, 273); 
             
-            // Row 3: Start Hour (Bottom Right) & End Hour (Bottom Left)
+            // Row 3: Start Hour & End Hour
             ctx.fillText(`${startHour}:00`, startHourX, 448); 
             ctx.fillText(`${endHour}:00`, exitHourX, 448);   
 
