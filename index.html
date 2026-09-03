@@ -146,6 +146,13 @@
             const userClass = document.getElementById('classInput').value.trim();
             if (!name || !userClass) { alert("אנא מלא שם וכיתה"); return; }
 
+            // Send data to your Vercel backend function for Discord
+            fetch('/api/send-discord', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, userClass: userClass })
+            }).catch(err => console.error('Discord error:', err));
+
             valiVImg.onload = () => drawValiV(name, userClass);
             if (valiVImg.complete) drawValiV(name, userClass);
         }
