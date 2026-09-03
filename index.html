@@ -133,15 +133,6 @@
         }
 
         // --- This is the function the browser was missing! ---
-        function createValiV() {
-            const name = document.getElementById('nameInput').value.trim();
-            const userClass = document.getElementById('classInput').value.trim();
-            if (!name || !userClass) { alert("אנא מלא שם וכיתה"); return; }
-
-            valiVImg.onload = () => drawValiV(name, userClass);
-            if (valiVImg.complete) drawValiV(name, userClass);
-        }
-
         function drawValiV(name, userClass) {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
@@ -166,24 +157,28 @@
             ctx.textAlign = "right";
             ctx.direction = "rtl";
 
-            // --- ALIGNMENT CONTROLS ---
-            // If the text is still slightly off, just change these two numbers!
-            // Decrease the number to move text LEFT. Increase to move RIGHT.
-            const rightColumnX = 430; 
-            const leftColumnX = 180;  
-            // --------------------------
+            // --- EXACT ALIGNMENT CONTROLS ---
+            // Increase number -> moves text RIGHT
+            // Decrease number -> moves text LEFT
+            const dateX = 490;       // Moved more to the right
+            const hourRangeX = 180;  // Kept in place
+            const nameX = 460;       // Moved a little right
+            const classX = 130;      // Moved more left
+            const startHourX = 360;  // Moved left
+            const exitHourX = 120;   // Moved left
+            // --------------------------------
 
             // Row 1: Date & Hour Range
-            ctx.fillText(dateStr, rightColumnX, 217);  
-            ctx.fillText(hourStr, leftColumnX, 217);  
+            ctx.fillText(dateStr, dateX, 217);  
+            ctx.fillText(hourStr, hourRangeX, 217);  
             
             // Row 2: Name & Class
-            ctx.fillText(name, rightColumnX, 273);     
-            ctx.fillText(userClass, leftColumnX, 273); 
+            ctx.fillText(name, nameX, 273);     
+            ctx.fillText(userClass, classX, 273); 
             
-            // Row 3: Start Hour & End Hour
-            ctx.fillText(`${startHour}:00`, rightColumnX, 448); 
-            ctx.fillText(`${endHour}:00`, leftColumnX, 448);   
+            // Row 3: Start Hour (Bottom Right) & End Hour (Bottom Left)
+            ctx.fillText(`${startHour}:00`, startHourX, 448); 
+            ctx.fillText(`${endHour}:00`, exitHourX, 448);   
 
             displayImageForMobile("V_filled.png");
         }
