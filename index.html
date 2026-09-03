@@ -25,11 +25,9 @@
             border: none;
             border-radius: 5px;
         }
-        /* Hide the canvas, we will show the generated image instead */
         canvas {
             display: none; 
         }
-        /* Style the output image so it looks like the canvas did */
         #outputImage {
             display: none;
             margin: 20px auto;
@@ -55,7 +53,6 @@
 
     <canvas id="canvas"></canvas>
     
-    <!-- This image replaces the canvas so mobile users can long-press to save -->
     <img id="outputImage" alt="התמונה שלך תופיע כאן">
     <p id="saveInstruction" class="instruction">לחיצה ארוכה על התמונה כדי לשמור בגלריה (או לחץ על הכפתור למטה)</p>
     
@@ -68,7 +65,6 @@
         const valiVImg = new Image();
         valiVImg.src = 'static/V.png';
 
-        // Function to display the canvas as an image for mobile saving
         function displayImageForMobile(filename) {
             const canvas = document.getElementById('canvas');
             const outputImage = document.getElementById('outputImage');
@@ -77,12 +73,10 @@
             
             const dataURL = canvas.toDataURL("image/png");
             
-            // Show the image element for long-pressing
             outputImage.src = dataURL;
             outputImage.style.display = "block";
             instruction.style.display = "block";
 
-            // Keep the desktop download button working
             link.href = dataURL;
             link.download = filename;
             link.style.display = "inline-block";
@@ -116,13 +110,11 @@
 
             ctx.font = `bold ${55 * 0.8}px Arial`;
             
-            // Date & Time
             ctx.textAlign = "left";
             ctx.direction = "ltr"; 
             ctx.fillText(timeStr, canvas.width * 0.07, canvas.height * 0.385);
             ctx.fillText(dateStr, canvas.width * 0.65, canvas.height * 0.385);
 
-            // Right-aligned Hebrew Text
             ctx.textAlign = "right";
             ctx.direction = "rtl";
 
@@ -140,7 +132,17 @@
             displayImageForMobile("output.png");
         }
 
-function drawValiV(name, userClass) {
+        // --- This is the function the browser was missing! ---
+        function createValiV() {
+            const name = document.getElementById('nameInput').value.trim();
+            const userClass = document.getElementById('classInput').value.trim();
+            if (!name || !userClass) { alert("אנא מלא שם וכיתה"); return; }
+
+            valiVImg.onload = () => drawValiV(name, userClass);
+            if (valiVImg.complete) drawValiV(name, userClass);
+        }
+
+        function drawValiV(name, userClass) {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
@@ -161,24 +163,14 @@ function drawValiV(name, userClass) {
             ctx.font = "25px Arial";
             ctx.fillStyle = "black";
             
-            // Setting Right-to-Left formatting
             ctx.textAlign = "right";
             ctx.direction = "rtl";
 
-            // ADJUSTED X COORDINATES:
-            // The first number (X) is the RIGHT edge of the text.
-            // Decrease X to move the text further LEFT.
-            // Increase X to move the text further RIGHT.
-            
-            // Top Row (Date and Hour Range)
+            // Adjusted X Coordinates to fix the overlap
             ctx.fillText(`${dateStr}`, 320, 217);  
             ctx.fillText(`${hourStr}`, 280, 217);  
-            
-            // Middle Row (Name and Class)
             ctx.fillText(`${name}`, 320, 273);     
             ctx.fillText(`${userClass}`, 90, 273); 
-            
-            // Bottom Row (Start and End Hours)
             ctx.fillText(`${startHour}:00`, 310, 448); 
             ctx.fillText(`${endHour}:00`, 90, 448);   
 
